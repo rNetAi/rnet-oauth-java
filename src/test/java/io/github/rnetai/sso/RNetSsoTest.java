@@ -16,9 +16,9 @@ public class RNetSsoTest {
     @Test
     public void testLoginUrlGeneration() {
         RNetConfig config = new RNetConfig("test-client", "test-secret", "http://localhost/callback");
-        RNetSso sso = new RNetSso(config);
+        RNetAuth sso = new RNetAuth(config);
         
-        String url = sso.getLoginUrl("test-challenge", "openid profile");
+        String url = sso.getAuthorizationUrl("test-challenge");
         assertTrue(url.contains("client_id=test-client"));
         assertTrue(url.contains("code_challenge=test-challenge"));
         assertTrue(url.contains("scope=openid+profile"));

@@ -19,7 +19,7 @@ Add the following to your `pom.xml`:
 <dependency>
     <groupId>io.github.rnetai</groupId>
     <artifactId>rnet-sso</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-beta</version>
 </dependency>
 ```
 
@@ -39,7 +39,7 @@ PKCEUtil.PKCE pkce = auth.generatePKCE();
 String codeVerifier = pkce.getVerifier(); // Store this in user session
 
 // Get the URL to redirect the user to
-String authUrl = auth.getAuthorizationUrl(pkce.getChallenge(), "openid profile email");
+String authUrl = auth.getAuthorizationUrl(pkce.getChallenge());
 ```
 
 ### 3. Exchange Code for Tokens
@@ -47,9 +47,16 @@ String authUrl = auth.getAuthorizationUrl(pkce.getChallenge(), "openid profile e
 // After the user redirects back with a ?code=...
 Map<String, Object> tokenResponse = auth.exchangeCodeForToken(authCode, codeVerifier);
 String accessToken = (String) tokenResponse.get("access_token");
+String refreshToken = (String) tokenResponse.get("refresh_token");
 ```
 
-### 4. Chat with AI
+### 4. Refresh Tokens
+```java
+Map<String, Object> refreshedTokens = auth.refreshAccessToken(refreshToken);
+String newAccessToken = (String) refreshedTokens.get("access_token");
+```
+
+### 5. Chat with AI
 ```java
 Map<String, Object> payload = Map.of(
     "messages", List.of(Map.of("role", "user", "content", "Hello!"))
@@ -59,7 +66,7 @@ Map<String, Object> response = ai.chat(payload, accessToken, "gemini-2.5-flash-l
 System.out.println(response);
 ```
 
-### 5. Streaming AI Response
+### 6. Streaming AI Response
 ```java
 InputStream stream = ai.chatStream(payload, accessToken, "gemini-2.5-flash-lite");
 // Process the stream...

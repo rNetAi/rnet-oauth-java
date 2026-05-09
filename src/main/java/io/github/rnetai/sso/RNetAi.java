@@ -54,7 +54,17 @@ public class RNetAi {
 
         HttpResponse<java.io.InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
         if (response.statusCode() >= 400) {
-            throw new IOException("AI stream request failed: " + response.statusCode());
+            try (java.io.InputStream is = response.body()) {
+                String errorBody = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                String errorMessage = "";
+                try {
+                    Map<String, Object> errorData = objectMapper.readValue(errorBody, Map.class);
+                    errorMessage = (String) errorData.getOrDefault("error", "");
+                } catch (Exception e) {
+                    errorMessage = errorBody;
+                }
+                throw new IOException("AI stream request failed: " + response.statusCode() + " - " + errorMessage);
+            }
         }
         return response.body();
     }

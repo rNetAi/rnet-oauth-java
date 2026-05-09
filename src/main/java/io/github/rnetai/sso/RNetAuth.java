@@ -31,13 +31,13 @@ public class RNetAuth {
         return PKCEUtil.generate();
     }
 
-    public String getAuthorizationUrl(String challenge, String scopes) {
+    public String getAuthorizationUrl(String challenge) {
         StringBuilder url = new StringBuilder(config.getIssuer())
                 .append("/oauth2/authorize?")
                 .append("response_type=code")
                 .append("&client_id=").append(urlEncode(config.getClientId()))
                 .append("&redirect_uri=").append(urlEncode(config.getRedirectUri()))
-                .append("&scope=").append(urlEncode(scopes != null ? scopes : "openid profile email"));
+                .append("&scope=").append(urlEncode("openid profile email"));
 
         if (challenge != null) {
             url.append("&code_challenge=").append(urlEncode(challenge));
