@@ -1,6 +1,6 @@
-# rNet Auth Java Library
+# RNet Auth Java Library
 
-A lightweight Java library for integrating **rNet Auth** and **AI Provider** services. This library allows users to authenticate via rNet and pay for AI model token costs directly using their rNet account.
+A lightweight Java library for integrating **RNet Auth** and **AI Provider** services. This library allows users to authenticate via RNet and pay for AI model token costs directly using their RNet account.
 
 ## Features
 

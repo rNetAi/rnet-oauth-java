@@ -7,10 +7,10 @@
 
     <groupId>io.github.rnetai</groupId>
     <artifactId>rnet-sso</artifactId>
-    <version>1.0.0-beta.1</version>
+    <version>1.0.0-beta.2</version>
 
-    <name>rNet SSO Java</name>
-    <description>Java library for rNet SSO integration, allowing users to authenticate and pay for AI model token costs using their rNet account.</description>
+    <name>RNet SSO Java</name>
+    <description>Java library for RNet SSO integration, allowing users to authenticate and pay for AI model token costs using their RNet account.</description>
 
     <url>https://www.rnetai.org/docs</url>
 
@@ -23,8 +23,8 @@
 
     <developers>
         <developer>
-            <id>rNetAi</id>
-            <name>RNet AI</name>
+            <id>RNetAi</id>
+            <name>rNet Ai</name>
         </developer>
     </developers>
 
