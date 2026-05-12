@@ -19,7 +19,7 @@ Add the following to your `pom.xml`:
 <dependency>
     <groupId>io.github.rnetai</groupId>
     <artifactId>rnet-sso</artifactId>
-    <version>1.0.0-beta</version>
+    <version>1.0.0-beta.3</version>
 </dependency>
 ```
 
@@ -39,7 +39,9 @@ PKCEUtil.PKCE pkce = auth.generatePKCE();
 String codeVerifier = pkce.getVerifier(); // Store this in user session
 
 // Get the URL to redirect the user to
-String authUrl = auth.getAuthorizationUrl(pkce.getChallenge());
+// challenge: PKCE code challenge (optional)
+// state: An optional string to maintain state between the request and callback (recommended for security)
+String authUrl = auth.getAuthorizationUrl(pkce.getChallenge(), "optional-state");
 ```
 
 ### 3. Exchange Code for Tokens
@@ -59,7 +61,12 @@ String newAccessToken = (String) refreshedTokens.get("access_token");
 ### 5. Chat with AI
 ```java
 Map<String, Object> payload = Map.of(
-    "messages", List.of(Map.of("role", "user", "content", "Hello!"))
+    "contents", List.of(
+        Map.of(
+            "role", "user",
+            "parts", List.of(Map.of("text", "Hello!"))
+        )
+    )
 );
 
 Map<String, Object> response = ai.chat(payload, accessToken, "gemini-2.5-flash-lite");

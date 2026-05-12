@@ -32,6 +32,10 @@ public class RNetAuth {
     }
 
     public String getAuthorizationUrl(String challenge) {
+        return getAuthorizationUrl(challenge, null);
+    }
+
+    public String getAuthorizationUrl(String challenge, String state) {
         StringBuilder url = new StringBuilder(config.getIssuer())
                 .append("/oauth2/authorize?")
                 .append("response_type=code")
@@ -42,6 +46,10 @@ public class RNetAuth {
         if (challenge != null) {
             url.append("&code_challenge=").append(urlEncode(challenge));
             url.append("&code_challenge_method=S256");
+        }
+
+        if (state != null) {
+            url.append("&state=").append(urlEncode(state));
         }
 
         return url.toString();
