@@ -19,7 +19,7 @@ Add the following to your `pom.xml`:
 <dependency>
     <groupId>io.github.rnetai</groupId>
     <artifactId>rnet-sso</artifactId>
-    <version>1.0.0-beta.3</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
