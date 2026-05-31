@@ -20,7 +20,7 @@ Add the following to your `pom.xml`:
 <dependency>
     <groupId>io.github.rnetai</groupId>
     <artifactId>rnet-oauth</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -84,10 +84,53 @@ Map<String, Object> response = ai.chat(payload, accessToken, "gemini-2.5-flash-l
 System.out.println(response);
 ```
 
-### 7. Streaming AI Response
+### 7. Streaming AI Response (Untested)
 ```java
 InputStream stream = ai.chatStream(payload, accessToken, "gemini-2.5-flash-lite");
 // Process the stream...
+```
+
+### 8. File Upload (Untested)
+```java
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+byte[] fileBuffer = Files.readAllBytes(Path.of("document.pdf"));
+
+// Upload to Gemini
+Map<String, Object> geminiUpload = ai.geminiFileUpload(accessToken, "gemini-2.5-flash-lite", fileBuffer, "application/pdf", "document.pdf");
+System.out.println(geminiUpload.get("fileReference")); // Use this in chat payload
+
+// Upload to OpenAI
+Map<String, Object> openaiUpload = ai.openAIFileUpload(accessToken, "gpt-4o", fileBuffer, "application/pdf", "document.pdf");
+```
+
+### 9. File Deletion (Untested)
+```java
+// Gemini files auto-delete after 48 hours, so there is no delete method.
+// Delete an OpenAI file:
+ai.openAIFileDelete(accessToken, "gpt-4o", (String) openaiUpload.get("fileReference"));
+```
+
+### 10. AI Chat with File & Tools (Untested)
+```java
+Map<String, Object> payload = Map.of(
+    "contents", List.of(
+        Map.of(
+            "role", "user",
+            "parts", List.of(
+                Map.of("text", "Based on this document, what is my name? Also search the web for the current weather in London."),
+                Map.of("fileData", Map.of("fileUri", geminiUpload.get("fileReference"), "mimeType", geminiUpload.get("mimeType")))
+            )
+        )
+    ),
+    "tools", List.of(
+        Map.of("googleSearch", Map.of()) // Enable Google Search tool
+    )
+);
+
+Map<String, Object> response = ai.chat(payload, accessToken, "gemini-2.5-flash-lite");
+System.out.println(response);
 ```
 
 ## License

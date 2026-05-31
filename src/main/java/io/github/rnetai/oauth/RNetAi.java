@@ -89,6 +89,87 @@ public class RNetAi {
         return response.body();
     }
 
+    public Map<String, Object> geminiFileUpload(String accessToken, String model, byte[] fileData, String mimeType, String displayName) throws IOException, InterruptedException {
+        return uploadFile(accessToken, model, fileData, mimeType, displayName);
+    }
+
+    public Map<String, Object> openAIFileUpload(String accessToken, String model, byte[] fileData, String mimeType, String displayName) throws IOException, InterruptedException {
+        return uploadFile(accessToken, model, fileData, mimeType, displayName);
+    }
+
+    public Map<String, Object> claudeFileUpload(String accessToken, String model, byte[] fileData, String mimeType, String displayName) throws IOException, InterruptedException {
+        return uploadFile(accessToken, model, fileData, mimeType, displayName);
+    }
+
+    public Map<String, Object> openAIFileDelete(String accessToken, String model, String fileId) throws IOException, InterruptedException {
+        return deleteFile(accessToken, model, fileId);
+    }
+
+    public Map<String, Object> claudeFileDelete(String accessToken, String model, String fileId) throws IOException, InterruptedException {
+        return deleteFile(accessToken, model, fileId);
+    }
+
+    private Map<String, Object> uploadFile(String accessToken, String model, byte[] fileData, String mimeType, String displayName) throws IOException, InterruptedException {
+        if (accessToken == null) throw new IllegalArgumentException("accessToken is required");
+        if (model == null) throw new IllegalArgumentException("model is required");
+        if (fileData == null) throw new IllegalArgumentException("fileData is required");
+        if (mimeType == null) throw new IllegalArgumentException("mimeType is required");
+
+        String url = config.getAiProvider() + "/ai/upload?access_token=" + urlEncode(accessToken) + "&model=" + urlEncode(model);
+        String boundary = java.util.UUID.randomUUID().toString().replace("-", "");
+
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+
+        // file part
+        out.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.UTF_8));
+        String filename = (displayName != null && !displayName.isEmpty()) ? displayName : "file";
+        out.write(("Content-Disposition: form-data; name=\"file\"; filename=\"" + filename + "\"\r\n").getBytes(StandardCharsets.UTF_8));
+        out.write(("Content-Type: " + mimeType + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+        out.write(fileData);
+        out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+
+        // mimeType part
+        out.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.UTF_8));
+        out.write(("Content-Disposition: form-data; name=\"mimeType\"\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+        out.write(mimeType.getBytes(StandardCharsets.UTF_8));
+        out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+
+        // displayName part
+        if (displayName != null) {
+            out.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.UTF_8));
+            out.write(("Content-Disposition: form-data; name=\"displayName\"\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+            out.write(displayName.getBytes(StandardCharsets.UTF_8));
+            out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+        }
+
+        out.write(("--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.ofByteArray(out.toByteArray()))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return handleResponse(response);
+    }
+
+    private Map<String, Object> deleteFile(String accessToken, String model, String fileId) throws IOException, InterruptedException {
+        if (accessToken == null) throw new IllegalArgumentException("accessToken is required");
+        if (model == null) throw new IllegalArgumentException("model is required");
+        if (fileId == null) throw new IllegalArgumentException("fileId is required");
+
+        String url = config.getAiProvider() + "/ai/upload?access_token=" + urlEncode(accessToken) + "&model=" + urlEncode(model) + "&fileId=" + urlEncode(fileId);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return handleResponse(response);
+    }
+
     private Map<String, Object> handleResponse(HttpResponse<String> response) throws IOException {
         if (response.statusCode() >= 400) {
             logger.error("Request failed: {} {}", response.statusCode(), response.body());

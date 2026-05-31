@@ -7,7 +7,7 @@
 
     <groupId>io.github.rnetai</groupId>
     <artifactId>rnet-oauth</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>RNet oauth Java</name>
     <description>Java library for RNet oauth integration, allowing users to authenticate and pay for AI model token costs using their RNet account.</description>
